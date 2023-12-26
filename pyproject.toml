@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "fetcher-py"
+version = "0.0.1"
+description = "Simplified fetcher to download packages from any ecosystem"
+authors = ["ezkangaroo <ezkangaroo@proton.me>"]
+readme = "README.md"
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.7"
+requests = "^2.31.0"
+click = "^8.1.7"
+click-help-colors = "^0.9.4"
+oras = "^0.1.26"
+gitpython = "^3.1.40"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.3"
+requests-mock = "^1.11.0"
+pytest-cov = "^4.1.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+fetcher_py = "fetcher_py.cli:cli"

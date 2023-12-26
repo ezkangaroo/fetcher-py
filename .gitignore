@@ -1,0 +1,7 @@
+*.pyc
+.ruff_cache
+.pytest_cache
+.coverage
+*.zip
+.metadata/
+scratch.txt
