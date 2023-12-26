@@ -32,18 +32,33 @@ def cli():
     ---------
         - pip://numpy@1.0.0
         - pip://numpy
-        - http://example.com/file.zip
-        - https://examplessl.com/file.zip
-        - git://somegithost.com/user/repo.git
-        - git://somegithost.com/user/repo.git@commit_hash
-        - git://somegithost.com/user/repo.git@branch
-        - git://somegithost.com/user/repo.git@git_tag
+        - npm://express@4.0.0
+        - cargo://axum@0.1.0
+        - gem://coulda@0.7.1
+        - hackage://aeson@2.2.1.0
+        - composer://psr/http-message@2.0
+        - nuget://StackExchange.Redis@2.7.10
+        - brew://bat
+        - oci://ghcr.io/wolfv/conda-forge/linux-64/xtensor:0.9.0-0
+        - git://https://github.com/sharkdp/bat.git@v0.21.0
+
+    \b
+    Note:
+        - brew does not accept versions (they will be ignored)
+        - oci does not accept version with @ seperator
+        - oci does not work with multi-platform container images yet!
+        - brew does not get raw bottles, it only fetches source code
 
     \b
     Command Examples:
     -----------------
-        >> get pip://numpy@1.0.0 # json of metadata
+        # json of metadata
+        # ----------------
+        >> get pip://numpy@1.0.0 
         >> get pip://numpy@1.0.0 | jq
+        #
+        # download
+        # --------
         >> download pip://numpy@1.0.0 > artifacts.zip
         >> download pip://numpy@1.0.0 -o some/path/where/to/write/artifacts.zip
     """
