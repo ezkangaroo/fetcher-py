@@ -1,7 +1,5 @@
-import dataclasses
 import io
-import json
-from typing import Optional
+from typing import Optional, Tuple
 from fetcher_py.component import Component
 from fetcher_py.package import Package
 from fetcher_py.downloader import Downloader
@@ -120,14 +118,16 @@ class NuGetRegistry(Registry):
             raw=data,
         )
 
-    def download(self, entry: Package) -> io.BytesIO:
+    def raw(self, entry: Package) -> Tuple[Component, bytes]:
         component = self.get(entry)
         downloader = Downloader()
         download_url = self.index.packge_version_download_url(
             component.name, component.version
         )
         downloader.add("src", download_url)
-        downloader.add_metadata(
-            "component.json", json.dumps(dataclasses.asdict(component), indent=4)
-        )
-        return downloader.get_as_zipped()
+
+        return component, downloader.get_as_zipped()
+
+    def download(self, entry: Package) -> io.BytesIO:
+        _, io_bytes = self.raw(entry)
+        return io_bytes

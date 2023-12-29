@@ -5,10 +5,9 @@ TODO: Private registry custom format
 TODO: Check Rate limits
 TODO: Premptively download index
 """
-import dataclasses
 import io
 import json
-from typing import Optional
+from typing import Optional, Tuple
 from fetcher_py.component import Component
 from fetcher_py.package import Package
 from fetcher_py.downloader import Downloader
@@ -97,16 +96,17 @@ class CargoRegistry(Registry):
             raw=data,
         )
 
-    def download(self, entry: Package) -> io.BytesIO:
+    def raw(self, entry: Package) -> Tuple[Component, bytes]:
         component = self.get(entry)
         downloader = Downloader()
         for kind, url in self.get_artifact_urls(component):
             downloader.add(kind, url)
 
-        downloader.add_metadata(
-            "component.json", json.dumps(dataclasses.asdict(component), indent=4)
-        )
-        return downloader.get_as_zipped()
+        return component, downloader.get_as_zipped()
+
+    def download(self, entry: Package) -> io.BytesIO:
+        _, io_bytes = self.raw(entry)
+        return io_bytes
 
     def get_artifact_urls(self, component: Component):
         if self.base_url == DEFAULT_BASE_URL:

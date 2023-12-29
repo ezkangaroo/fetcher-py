@@ -2,7 +2,7 @@ import io
 import logging
 import os
 from pathlib import Path
-from typing import Dict
+from typing import Dict, Tuple
 import requests
 from fetcher_py.component import Component
 from fetcher_py.package import Package
@@ -61,6 +61,19 @@ class Fetcher:
         """
         package = Package.parse(query)
         return self._get_registry(package.ecosystem).get(package)
+
+    def raw(self, query) -> Tuple[Component, io.BytesIO]:
+        """
+        Retrieve raw component, and data bytes.
+
+        Parameters:
+        - query: Package query string.
+
+        Returns:
+        - Tuple of Component, and Raw bytes of the downloaded content.
+        """
+        package = Package.parse(query)
+        return self._get_registry(package.ecosystem).raw(package)
 
     def download_raw(self, query) -> io.BytesIO:
         """

@@ -54,7 +54,7 @@ def cli():
     -----------------
         # json of metadata
         # ----------------
-        >> get pip://numpy@1.0.0 
+        >> get pip://numpy@1.0.0
         >> get pip://numpy@1.0.0 | jq
         #
         # download

@@ -1,8 +1,7 @@
 import io
-import json
 import os
 import tempfile
-from typing import Optional
+from typing import Optional, Tuple
 import zipfile
 from fetcher_py.component import Component
 from fetcher_py.package import Package
@@ -47,33 +46,28 @@ class GitRegistry(Registry):
 
         return Component(**data)
 
-    def download(self, entry: Package) -> io.BytesIO:
+    def raw(self, entry: Package) -> Tuple[Component, bytes]:
         zip_data = io.BytesIO()
 
         with tempfile.TemporaryDirectory() as temp_dir:
-            metadata_dir = os.path.join(temp_dir, ".metadata")
-            os.makedirs(metadata_dir)
-            component_json_path = os.path.join(metadata_dir, "component.json")
-
-            dist_dir = os.path.join(temp_dir, "dist")
-            os.makedirs(dist_dir)
             repo = Repo.clone_from(
-                entry.name, dist_dir, branch=entry.version, single_branch=True
+                entry.name, temp_dir, branch=entry.version, single_branch=True
             )
             try:
                 if entry.version:
                     repo.git.checkout(entry.version)
                 data = {
                     "name": entry.name,
-                    "version": entry.version,
+                    "version": repo.head.object.hexsha,
                     "registry_url": entry.name,
+                    "homepage_url": None,
+                    "description": None,
+                    "declared_licenses": None,
+                    "raw": None,
                 }
 
             finally:
                 repo.close()
-
-            with open(component_json_path, "w") as json_file:
-                json.dump(data, json_file, indent=2)
 
             with zipfile.ZipFile(zip_data, "w") as zip_file:
                 for root, _, files in os.walk(temp_dir):
@@ -82,4 +76,8 @@ class GitRegistry(Registry):
                         arcname = os.path.relpath(file_path, temp_dir)
                         zip_file.write(file_path, arcname=arcname)
 
-        return zip_data
+            return Component(**data), zip_data
+
+    def download(self, entry: Package) -> io.BytesIO:
+        _, io_bytes = self.raw(entry)
+        return io_bytes

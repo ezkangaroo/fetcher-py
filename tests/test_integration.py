@@ -45,17 +45,3 @@ def test_integration(query, name, version, license):
     comp = fetcher.download_raw(query)
     with zipfile.ZipFile(comp, "r") as zip_file:
         assert zip_file.testzip() is None
-        assert ".metadata/component.json" in zip_file.namelist()
-
-        # more than 1 directory
-        directories = {
-            name.split("/")[0] for name in zip_file.namelist() if "/" in name
-        }
-        assert len(directories) > 1
-
-        # Check if both directories are not empty
-        for directory in directories:
-            files_in_directory = [
-                name for name in zip_file.namelist() if name.startswith(f"{directory}/")
-            ]
-            assert files_in_directory, f"Directory '{directory}' is empty"

@@ -62,7 +62,7 @@ class OciRegistry(Registry):
             raw=data,
         )
 
-    def download(self, entry: Package) -> io.BytesIO:
+    def raw(self, entry: Package) -> io.BytesIO:
         zip_data = io.BytesIO()
         component = self.get(entry)
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -84,4 +84,8 @@ class OciRegistry(Registry):
                         arcname = os.path.relpath(file_path, temp_dir)
                         zip_file.write(file_path, arcname=arcname)
 
-        return zip_data
+        return component, zip_data
+
+    def download(self, entry: Package) -> io.BytesIO:
+        _, io_bytes = self.raw(entry)
+        return io_bytes
